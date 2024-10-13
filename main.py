@@ -103,7 +103,7 @@ class VideoSplitterApp(QMainWindow):
                 return
 
             # Export audio to a temporary file
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as temp_audio_file:
                 temp_audio_path = temp_audio_file.name
                 subprocess.run(["ffmpeg", "-i", video_path, "-q:a", "0", "-map", "a", temp_audio_path], check=True)
 
