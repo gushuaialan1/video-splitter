@@ -103,9 +103,8 @@ class VideoSplitterApp(QMainWindow):
                 return
 
             # Export audio to a temporary file
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as temp_audio_file:
-                temp_audio_path = temp_audio_file.name
-                subprocess.run(["ffmpeg", "-i", video_path, "-q:a", "0", "-map", "a", temp_audio_path], check=True)
+            temp_audio_path = tempfile.mktemp(suffix=".wav")
+            subprocess.run(["ffmpeg", "-y", "-i", video_path, "-q:a", "0", "-map", "a", temp_audio_path], check=True)
 
             # Load audio using pydub for analysis
             audio_segment = AudioSegment.from_wav(temp_audio_path)
@@ -132,7 +131,7 @@ class VideoSplitterApp(QMainWindow):
                 end = split_points[idx + 1]
                 output_path = os.path.join(output_folder, f"{prefix}_{idx + 1:02d}.mp4")
                 subprocess.run([
-                    "ffmpeg", "-i", video_path, "-ss", str(start), "-to", str(end), "-c", "copy", output_path
+                    "ffmpeg", "-y", "-ss", str(start), "-i", video_path, "-to", str(end - start), "-c", "copy", output_path
                 ], check=True)
 
             QMessageBox.information(self, "成功", f"视频已成功分割为 {num_parts} 个部分！")
